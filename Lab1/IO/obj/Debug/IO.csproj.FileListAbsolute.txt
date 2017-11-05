@@ -1,0 +1,6 @@
+D:\LowLevel\PenTesty\Guitars\IO\IO\bin\Debug\IO.exe.config
+D:\LowLevel\PenTesty\Guitars\IO\IO\bin\Debug\IO.exe
+D:\LowLevel\PenTesty\Guitars\IO\IO\bin\Debug\IO.pdb
+D:\LowLevel\PenTesty\Guitars\IO\IO\obj\Debug\IO.csprojResolveAssemblyReference.cache
+D:\LowLevel\PenTesty\Guitars\IO\IO\obj\Debug\IO.exe
+D:\LowLevel\PenTesty\Guitars\IO\IO\obj\Debug\IO.pdb

@@ -1,0 +1,12 @@
+D:\LowLevel\PenTesty\Guitars\IO\IO\bin\Debug\IO.exe.config
+D:\LowLevel\PenTesty\Guitars\IO\IO\bin\Debug\IO.exe
+D:\LowLevel\PenTesty\Guitars\IO\IO\bin\Debug\IO.pdb
+D:\LowLevel\PenTesty\Guitars\IO\IO\obj\Debug\IO.exe
+D:\LowLevel\PenTesty\Guitars\IO\IO\obj\Debug\IO.pdb
+D:\LowLevel\PenTesty\Guitars\IO\IO\obj\Debug\Lab1.csprojResolveAssemblyReference.cache
+D:\LowLevel\PenTesty\Guitars\Lab1\IO\bin\Debug\IO.exe.config
+D:\LowLevel\PenTesty\Guitars\Lab1\IO\obj\Debug\IO.exe
+D:\LowLevel\PenTesty\Guitars\Lab1\IO\obj\Debug\IO.pdb
+D:\LowLevel\Studia\InzynieriaOprogramowania\Lab1\IO\bin\Debug\IO.exe.config
+D:\LowLevel\Studia\InzynieriaOprogramowania\Lab1\IO\obj\Debug\IO.exe
+D:\LowLevel\Studia\InzynieriaOprogramowania\Lab1\IO\obj\Debug\IO.pdb
