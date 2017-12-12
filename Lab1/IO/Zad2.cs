@@ -13,6 +13,7 @@ namespace IO
     {
         public Zad2()
         {
+			/*Serwer moze obsługiwać tylko jednego klienta na raz. */
             ThreadPool.QueueUserWorkItem(Server);
             ThreadPool.QueueUserWorkItem(Client);
             ThreadPool.QueueUserWorkItem(Client);

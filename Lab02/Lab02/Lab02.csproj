@@ -44,11 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompletedEventArgs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Zad11.cs" />
     <Compile Include="Zad6.cs" />
     <Compile Include="Zad7.cs" />
     <Compile Include="Zad8.cs" />
+    <Compile Include="Zad9.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

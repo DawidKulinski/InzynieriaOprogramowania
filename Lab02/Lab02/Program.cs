@@ -11,9 +11,10 @@ namespace Lab02
         static void Main(string[] args)
         {
             //BeginRead(buffer,0,buffer.length,callback,parameters);
-            new Zad6();
-            new Zad7();
-            new Zad8();
+            //new Zad6();
+            //new Zad7();
+            //new Zad8();
+            new Zad11();
         }
     }
 }
