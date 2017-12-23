@@ -1,83 +1,186 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lab02
 {
     public class MatMulCalculator
     {
-      /*  delegate void MatMulCompleted(CompletedEventArgs args);
+        private delegate void MatMulCompleted(double[,] matrix1,double[,] matrix2, AsyncOperation asyncOperation);
 
-        private static event MatMulCompleted foo;
+        public event MatMulCompletedEventHandler matMulCompleted;
 
-        public HybridDictionary dictionary;
+        public HybridDictionary HybridDictionary = new HybridDictionary();
 
-        public delegate void onCompletedCallback(object state);
-
-        static void CalculateCompleted(CompletedEventArgs args)
-        {
-            foo.Invoke(new CompletedEventArgs());
-        }
+        public SendOrPostCallback onCompletedCallback;
 
         public MatMulCalculator()
         {
-            onCompletedCallback = CalculateCompleted();
+            onCompletedCallback = new SendOrPostCallback(CalculateCompleted);
         }
-        */
-    }
 
-    class Zad9
-    {
-
-/*
-        static void CalculateCompleted
-
-        static void ComputeMatrix(CompletedEventArgs args)
+        public void CalculateCompleted(object operationState)
         {
-            var matrix1 = args.Matrix1;
-            var matrix2 = args.Matrix2;
-            int[,] matrix3 = new int[args.size, args.size];
+            MatMulCompletedEventArgs e = operationState as MatMulCompletedEventArgs;
 
-            int sum = 0;
-            for (int i = 0; i < args.size; i++)
+            matMulCompleted?.Invoke(this, e);
+        }
+
+        private void Completion(double[,] mat1,double[,] mat2,double[,] result,
+            Exception ex, bool canceled, AsyncOperation ao)
+        {
+
+            if (!canceled)
             {
-                for (int j = 0; j < args.size; j++)
+                lock (HybridDictionary.SyncRoot)
                 {
-                    for (int k = 0; k < args.size; k++)
+                    HybridDictionary.Remove(ao.UserSuppliedState);
+                }
+            }
+
+            MatMulCompletedEventArgs e = 
+                new MatMulCompletedEventArgs(
+                    mat1,
+                    mat2,
+                    result,
+                    ex,
+                    canceled,
+                    ao.UserSuppliedState);
+
+
+            ao.PostOperationCompleted(onCompletedCallback, e);
+        }
+
+        private bool TaskCancelled(object TaskID)
+        {
+            return(HybridDictionary[TaskID] == null);
+        }
+
+        private void CalculateWorker(double[,] mat1, double[,] mat2, AsyncOperation ao)
+        {
+            Exception e = null;
+            double[,] result = null;
+
+            if (!TaskCancelled(ao.UserSuppliedState))
+            {
+                try
+                {
+                    result = MatMul(mat1, mat2);
+                }
+                catch (Exception ex)
+                {
+                    e = ex;
+                }
+            }
+
+            this.Completion(
+                mat1,
+                mat2,
+                result,
+                e,
+                TaskCancelled(ao.UserSuppliedState),
+                ao);
+        }
+
+        double getVal(double[,] mat, int column, int row)
+        {
+            int size = mat.GetLength(0);
+
+            if (column > size || row > size)
+            {
+                throw new ArgumentException();
+            }
+
+            return mat[column, row];
+        }
+
+        private double[,] MatMul(double[,] mat1, double[,] mat2)
+        {
+            if (mat1.GetLength(0) != mat2.GetLength(1) || mat1.GetLength(1) != mat2.GetLength(1) || mat1.GetLength(0) != mat1.GetLength(1))
+            {
+                throw new ArgumentException();
+            }
+            
+            var size = mat1.GetLength(0);
+            double[,] result = new double[size, size];
+
+            double sum = 0;
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    for (int k = 0; k < size; k++)
                     {
-                        sum += matrix1[i, k] * matrix2[k, j];
+                        sum += getVal(mat1,i,k) * getVal(mat2,k, j);
                     }
-                    matrix3[i, j] = sum;
+                    result[i, j] = sum;
                     sum = 0;
                 }
             }
 
-            args.Matrix3 = matrix3;
-        }
-        public Zad9()
-        {
-            foo = ComputeMatrix;
-            foo += onCompletedCallback;
-            foo.Invoke(new CompletedEventArgs(3,new int[,]{ {1,2,3}, {4,5,6}, {7,8,9} }, 
-                new int[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } },
-                new Exception(),
-                false,
-                new object()));
+            return result;
         }
 
-        static void onCompletedCallback(CompletedEventArgs args)
+        public virtual void MatMulAsync(double[,] mat1, double[,] mat2, object taskID)
         {
-            for (int i = 0; i < args.size; i++)
+            AsyncOperation asyncOperation = AsyncOperationManager.CreateOperation(taskID);
+
+            lock (HybridDictionary.SyncRoot)
             {
-                for (int j = 0; j < args.size; j++)
+                if (HybridDictionary.Contains(taskID))
                 {
-                    Console.Write(args.Matrix3[i,j]+" ");
+                    throw new ArgumentException("TaskID parameter must be unique", "TaskID");
                 }
-                Console.WriteLine();
             }
-        } */
+
+            HybridDictionary[taskID] = asyncOperation;
+
+            MatMulCompleted workerDelegate = new MatMulCompleted(CalculateWorker);
+            workerDelegate.BeginInvoke(
+                mat1,
+                mat2,
+                asyncOperation,
+                null,
+                null);
+        }
+
+        public void CancelAsync(object taskId)
+        {
+            AsyncOperation asyncOperation = HybridDictionary[taskId] as AsyncOperation;
+            if (asyncOperation != null)
+            {
+                lock (HybridDictionary.SyncRoot)
+                {
+                    HybridDictionary.Remove(taskId);
+                }
+            }
+        }
+    }
+
+    class Zad9
+    {
+        public Zad9()
+        {
+            var m1 = new double[,]
+            {
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9}
+            };
+            var m2 = new double[,]
+            {
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9}
+            };
+            MatMulCalculator calc = new MatMulCalculator();
+
+            calc.MatMulAsync(m1,m2,new object());
+        }  
     }
 }
