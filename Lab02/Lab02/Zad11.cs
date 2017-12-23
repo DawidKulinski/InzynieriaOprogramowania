@@ -29,8 +29,8 @@ namespace Lab02
             BackgroundWorker1.RunWorkerAsync();
 
 
-            TcpClient client = new TcpClient("127.0.0.1",12345);
-            TcpClient client2 = new TcpClient("127.0.0.1",12345);
+            var client = new TcpClient("127.0.0.1",12345);
+            var client2 = new TcpClient("127.0.0.1",12345);
 
             Thread.Sleep(1);
 
@@ -47,10 +47,6 @@ namespace Lab02
                 TcpClient client = tcp.AcceptTcpClient();
                 BackgroundWorker1.ReportProgress(++i);
             }
-
-
-
-
         }
 
         private void backgroundWorker1_Disposed(object sender, EventArgs e)

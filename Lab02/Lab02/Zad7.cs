@@ -14,9 +14,9 @@ namespace Lab02
             FileStream fs = new FileStream("text.txt", FileMode.Open, FileAccess.Read);
             var buff = new byte[fs.Length];
 
-            var xd =fs.BeginRead(buff, 0, buff.Length, null, null);
+            var asyncResult =fs.BeginRead(buff, 0, buff.Length, null, null);
 
-            fs.EndRead(xd);
+            fs.EndRead(asyncResult);
 
             Console.WriteLine(Encoding.ASCII.GetString(buff));
         }

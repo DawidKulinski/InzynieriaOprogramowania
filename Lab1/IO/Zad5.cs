@@ -19,6 +19,7 @@ namespace IO
             var table = _generateArr(arrSize);
             var splitted = table.SplitArrayBy(partSize).ToArray();
             var handles = new WaitHandle[splitted.Length];
+
             Console.WriteLine(table.Sum());
 
             for (var i=0;i<splitted.Length; i++)

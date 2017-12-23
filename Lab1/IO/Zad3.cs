@@ -34,14 +34,17 @@ namespace IO
 
         void Client(object stateInfo)
         {
-            TcpClient client = new TcpClient();
+            var client = new TcpClient();
             var buffer = new byte[1024];
-            client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2048));
+            var stream = new NetworkStream(client.Client, false);
             var message = "Helloabcdefghijklmnoprstuvwxyz";
-            NetworkStream stream = new NetworkStream(client.Client, false);
+
+            client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2048));
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Wysłałem wiadomość k:" + message);
             stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
+
             stream.Read(buffer, 0, buffer.Length);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Otrzymałem wiadomość k:" + System.Text.Encoding.ASCII.GetString(buffer));
@@ -51,12 +54,15 @@ namespace IO
         {
             var client = (TcpClient)stateInfo;
             byte[] buffer = new byte[1024];
+
             client.GetStream().Read(buffer, 0, buffer.Length);
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("Otrzymałem wiadomośc s: " + System.Text.Encoding.ASCII.GetString(buffer));
+
             client.GetStream().Write(buffer, 0, buffer.Length);
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("Wysłałem wiadomośc s: " + System.Text.Encoding.ASCII.GetString(buffer));
+
             client.Close();
         }
     }

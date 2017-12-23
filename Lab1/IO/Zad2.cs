@@ -41,12 +41,17 @@ namespace IO
         void Client(object stateInfo)
         {
             TcpClient client = new TcpClient();
+
+            var stream = new NetworkStream(client.Client, false);
             var buffer = new byte[1024];
-            client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2048));
             var message = "Helloabcdefghijklmnoprstuvwxyz";
-            NetworkStream stream = new NetworkStream(client.Client, false);
+
+
+            client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2048));
+
             stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
             Console.WriteLine("Wysłałem wiadomość " + message);
+
             stream.Read(buffer, 0, buffer.Length);
             Console.WriteLine("Otrzymałem wiadomość" + System.Text.Encoding.ASCII.GetString(buffer));
         }

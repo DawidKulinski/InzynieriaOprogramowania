@@ -24,11 +24,12 @@ namespace IO
 
         void Server(object stateInfo)
         {
-            TcpListener server = new TcpListener(IPAddress.Any, 2048);
+            var server = new TcpListener(IPAddress.Any, 2048);
             server.Start();
+
             while (true)
             {
-                TcpClient client = server.AcceptTcpClient();
+                var client = server.AcceptTcpClient();
                 ThreadPool.QueueUserWorkItem(Connection, client);
 
             }
@@ -36,17 +37,21 @@ namespace IO
 
         void Client(object stateInfo)
         {
-            TcpClient client = new TcpClient();
+            var client = new TcpClient();
             var buffer = new byte[1024];
-            client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2048));
             var message = "Helloabcdefghijklmnoprstuvwxyz";
-            NetworkStream stream = new NetworkStream(client.Client, false);
+
+            client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2048));
+
+            var stream = new NetworkStream(client.Client, false);
+
             lock (locker)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Wysłałem wiadomość k:" + message);
             }
             stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
+
             stream.Read(buffer, 0, buffer.Length);
             lock (locker)
             {
@@ -58,7 +63,7 @@ namespace IO
         void Connection(object stateInfo)
         {
             var client = (TcpClient)stateInfo;
-            byte[] buffer = new byte[1024];
+            var buffer = new byte[1024];
             client.GetStream().Read(buffer, 0, buffer.Length);
             lock (locker)
             {
