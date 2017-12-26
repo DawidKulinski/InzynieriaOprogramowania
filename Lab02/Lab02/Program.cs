@@ -15,9 +15,9 @@ namespace Lab02
             //new Zad7();
             //new Zad8();
             //new Zad9();
-
-            new Zad10();
+            //new Zad10();
             //new Zad11();
+            new Zad12();
         }
     }
 }
