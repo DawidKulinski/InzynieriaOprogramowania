@@ -10,7 +10,9 @@ namespace AdditionalTasks
     {
         static void Main(string[] args)
         {
-            new III();
+            //new III();
+            new IV();
+
         }
     }
 }
