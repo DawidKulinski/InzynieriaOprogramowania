@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace AdditionalTasks
 {
@@ -14,7 +10,7 @@ namespace AdditionalTasks
     {
         private delegate void SaveComplete(byte[] array,string filename, AsyncOperation asyncOperation);
 
-        public event SaveCompleteEventHandler saveCompleteEventHandler;
+        public event SaveCompleteEventHandler SaveCompleteEventHandler;
 
         public HybridDictionary HybridDictionary;
 
@@ -30,7 +26,7 @@ namespace AdditionalTasks
         {
             SaveCompleteEventArgs e = operationState as SaveCompleteEventArgs;
 
-            saveCompleteEventHandler?.Invoke(this,e);
+            SaveCompleteEventHandler?.Invoke(this,e);
         }
 
         private void Completion(string result, Exception ex, bool canceled, AsyncOperation asyncOperation)
@@ -48,9 +44,9 @@ namespace AdditionalTasks
             asyncOperation.PostOperationCompleted(OnCompletedCallback,e);
         }
 
-        private bool TaskCancelled(object TaskId)
+        private bool TaskCancelled(object taskId)
         {
-            return(HybridDictionary[TaskId] == null);
+            return(HybridDictionary[taskId] == null);
         }
 
         private void SaveWorker(byte[] data,string filename, AsyncOperation asyncOperation)
@@ -95,7 +91,7 @@ namespace AdditionalTasks
             {
                 if (HybridDictionary.Contains(taskId))
                 {
-                    throw new ArgumentException("TaskID parameter must be unique","TaskID");
+                    throw new ArgumentException("TaskID parameter must be unique","taskID");
                 }
             }
 
@@ -112,9 +108,7 @@ namespace AdditionalTasks
 
         public void CancelAsync(object taskId)
         {
-            AsyncOperation asyncOperation = 
-                HybridDictionary[taskId] as AsyncOperation;
-            if (asyncOperation != null)
+            if (HybridDictionary[taskId] is AsyncOperation asyncOperation)
             {
                 lock (HybridDictionary.SyncRoot)
                 {
@@ -129,26 +123,26 @@ namespace AdditionalTasks
     {
         private static AutoResetEvent wh = new AutoResetEvent(false);
 
-        private ByteArraySave byteArraySave = new ByteArraySave();
+        private readonly ByteArraySave _byteArraySave = new ByteArraySave();
 
         public III()
         {
-            byteArraySave.saveCompleteEventHandler += new SaveCompleteEventHandler(SaveFile_Completed);
+            _byteArraySave.SaveCompleteEventHandler += new SaveCompleteEventHandler(SaveFile_Completed);
 
-            startAsync();
+            StartAsync();
 
             wh.WaitOne();
         }
 
-        private void startAsync()
+        private void StartAsync()
         {
             string filename = "Saved.pdf";
-
+            //Pobranie przykladowego pliku który został umieszczony w plikach projektu.
             var data = File.ReadAllBytes("pocorgtfo00.pdf");
 
             Guid taskId = Guid.NewGuid();
             
-            this.byteArraySave.SaveFileAsync(data,filename,taskId);
+            this._byteArraySave.SaveFileAsync(data,filename,taskId);
         }
 
         private static void SaveFile_Completed(

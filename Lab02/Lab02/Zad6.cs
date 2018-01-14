@@ -9,13 +9,17 @@ namespace Lab02
     {
         public Zad6()
         {
+
+            //Pobranie pliku text.txt.
             const string str = "text.txt";
             var fs = new FileStream(str,FileMode.Open,FileAccess.Read);
 
             var buffer = new byte[fs.Length];
             var handle = new AutoResetEvent(false);
 
+            //Rozpoczęcie czytania z pliku za pomocą funkcji BeginRead
             fs.BeginRead(buffer, 0, buffer.Length, ReadCallback, new object[] { fs,buffer,handle });
+            //AutoResetEvent oczekujacy na zakonczenie operacji czytania.
             handle.WaitOne();
         }
 

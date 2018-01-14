@@ -1,30 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Lab02
 {
     class Zad10
     {
-        private MatMulCalculator matMulCalculator = new MatMulCalculator();
-        private static AutoResetEvent handle = new AutoResetEvent(false);
+        private readonly MatMulCalculator _matMulCalculator = new MatMulCalculator();
+        private static readonly AutoResetEvent Handle = new AutoResetEvent(false);
 
         public Zad10()
         {
-            matMulCalculator.matMulCompleted += new MatMulCompletedEventHandler(
+            _matMulCalculator.matMulCompleted += new MatMulCompletedEventHandler(
                 MatMulCalculator_Completed);
 
-            startAsync();
+            StartAsync();
 
-            handle.WaitOne();
+            Handle.WaitOne();
 
 
         }
 
-        private void startAsync()
+        private void StartAsync()
         {
             var m1 = new double[,]
             {
@@ -41,7 +37,7 @@ namespace Lab02
 
             Guid taskId = Guid.NewGuid();
 
-            this.matMulCalculator.MatMulAsync(m1,m2,taskId);
+            this._matMulCalculator.MatMulAsync(m1,m2,taskId);
 
         }
 
@@ -74,7 +70,7 @@ namespace Lab02
                 }
             }
 
-            handle.Set();
+            Handle.Set();
         }
        
     }

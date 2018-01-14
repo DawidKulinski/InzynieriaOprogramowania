@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Console = System.Console;
 
 namespace AdditionalTasks
@@ -15,13 +12,13 @@ namespace AdditionalTasks
         private bool _isListening;
         private readonly TcpListener _server;
         private readonly AutoResetEvent _wh;
-        private int connections;
+        private int _connections;
 
         public Server(AutoResetEvent autoResetEvent)
         {
             _isListening = false;
             _wh = autoResetEvent;
-            connections = 0;
+            _connections = 0;
             _server = new TcpListener(IPAddress.Any,13377);
             ThreadPool.QueueUserWorkItem(DoWorkCallback, _server);
         }
@@ -46,7 +43,7 @@ namespace AdditionalTasks
             while (_isListening)
             {
                 TcpClient client = server.AcceptTcpClient();
-                connections++;
+                _connections++;
                 ThreadPool.QueueUserWorkItem(ConnectionCallback, client);
             }
         }
@@ -55,6 +52,8 @@ namespace AdditionalTasks
         {
             var client = (TcpClient) state;
             var message = "";
+
+            //Przygotowane odpowiedzi na możliwe opcje które może zapytać klient.
             while (client.Connected)
             {
                 var requestBytes = new byte[1024];
@@ -88,6 +87,7 @@ namespace AdditionalTasks
 
         public Client()
         {
+            //Rozpoczęcie połączenia przez klienta. Wysłanie komendy HEY. Która oznajmia serwerowi połączenie.
             _buffer = new byte[3];
             _client = new TcpClient("127.0.0.1",13377);
             _client.GetStream().ReadTimeout = 3000;
@@ -99,6 +99,7 @@ namespace AdditionalTasks
 
         public void SendMessage(string message)
         {
+            //Wysłanie przez klienta wiadomości do serwera. Oczekiwanie na komende ACK, która poświadcza otrzymanie wiadomości.
             _client.GetStream().Write(Encoding.ASCII.GetBytes(message),0,message.Length);
 
             _client.GetStream().Read(_buffer, 0, _buffer.Length);
@@ -108,6 +109,7 @@ namespace AdditionalTasks
 
         public void SendBye()
         {
+            //Zakonczenie połączenia odbywa się za pomocą komendy BYE.
             _client.GetStream().Write(Encoding.ASCII.GetBytes("BYE"),0,"BYE".Length);
 
             var asyncResult = _client.GetStream().BeginRead(_buffer, 0, _buffer.Length,CloseConnectionCallback,null);
@@ -131,7 +133,7 @@ namespace AdditionalTasks
             var wh = new AutoResetEvent(false);
             var server = new Server(wh);
             server.Start();
-
+            //Przykładowo przeprowadzona wymiana wiadomości w konfiguracji jeden serwer, 2 klientów
             var client1 = new Client();
             var client2 = new Client();
             client1.SendMessage("Tutaj ");

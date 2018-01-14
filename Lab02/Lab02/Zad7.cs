@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Lab02
 {
@@ -11,11 +8,15 @@ namespace Lab02
     {
         public Zad7()
         {
-            FileStream fs = new FileStream("text.txt", FileMode.Open, FileAccess.Read);
+
+            //Otwarcie pliku text.txt.
+            var fs = new FileStream("text.txt", FileMode.Open, FileAccess.Read);
             var buff = new byte[fs.Length];
 
-            var asyncResult =fs.BeginRead(buff, 0, buff.Length, null, null);
 
+            //Czytanie danego pliku za pomoca funkcji BeginRead, która zwraca IAsyncResult.
+            var asyncResult =fs.BeginRead(buff, 0, buff.Length, null, null);
+            //Wywolanie funkcji EndRead z argumentem typu IAsyncResult.
             fs.EndRead(asyncResult);
 
             Console.WriteLine(Encoding.ASCII.GetString(buff));

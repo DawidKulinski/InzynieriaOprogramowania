@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Lab02
 {
@@ -17,11 +13,11 @@ namespace Lab02
 
         public HybridDictionary HybridDictionary = new HybridDictionary();
 
-        public SendOrPostCallback onCompletedCallback;
+        public SendOrPostCallback OnCompletedCallback;
 
         public MatMulCalculator()
         {
-            onCompletedCallback = new SendOrPostCallback(CalculateCompleted);
+            OnCompletedCallback = new SendOrPostCallback(CalculateCompleted);
         }
 
         public void CalculateCompleted(object operationState)
@@ -53,12 +49,15 @@ namespace Lab02
                     ao.UserSuppliedState);
 
 
-            ao.PostOperationCompleted(onCompletedCallback, e);
+            ao.PostOperationCompleted(OnCompletedCallback, e);
         }
 
-        private bool TaskCancelled(object TaskID)
+        private bool TaskCancelled(object taskId)
         {
-            return(HybridDictionary[TaskID] == null);
+            lock (HybridDictionary.SyncRoot)
+            {
+                return(HybridDictionary[taskId] == null);
+            }
         }
 
         private void CalculateWorker(double[,] mat1, double[,] mat2, AsyncOperation ao)
@@ -151,8 +150,7 @@ namespace Lab02
 
         public void CancelAsync(object taskId)
         {
-            AsyncOperation asyncOperation = HybridDictionary[taskId] as AsyncOperation;
-            if (asyncOperation != null)
+            if (HybridDictionary[taskId] is AsyncOperation asyncOperation)
             {
                 lock (HybridDictionary.SyncRoot)
                 {
@@ -181,6 +179,8 @@ namespace Lab02
             MatMulCalculator calc = new MatMulCalculator();
 
             calc.MatMulAsync(m1,m2,new object());
+
+            Console.WriteLine("Obliczono macierz");
         }  
     }
 }

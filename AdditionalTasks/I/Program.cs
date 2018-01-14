@@ -9,7 +9,7 @@ namespace I
     static class Program
     {
         /// <summary>
-        /// Główny punkt wejścia dla aplikacji.
+        /// Zadanie numer I dodane jako inny projekt z powodu wymagań co do stworzenia go za pomocą Windows Forms.
         /// </summary>
         [STAThread]
         static void Main()

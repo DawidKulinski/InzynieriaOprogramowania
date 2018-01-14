@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lab02
 {
@@ -13,20 +8,19 @@ namespace Lab02
     public class Zad8
     {
         delegate int DelegateType(int arguments);
-        private static DelegateType facRec;
-        private static DelegateType facIter;
-        private static DelegateType fibRec;
-        private static DelegateType fibIter;
 
-        public static object locker = new object();
+        public static object Locker = new object();
 
+        private static DelegateType FacIter1 { get; set; }
+
+        //Obliczanie silni za pomoca metody rekurencynej.
         public int FacRec(int arg)
         {
             if (arg == 0 || arg == 1)
                 return 1;
             return arg * FacRec(arg - 1);
         }
-
+        //Obliczanie silni za pomocą metody iteracyjnej.
         public int FacIter(int arg)
         {
             var result = arg;
@@ -36,7 +30,7 @@ namespace Lab02
             }
             return result;
         }
-
+        //Obliczanie ciągu fibonacciego za pomocą metody rekurencyjnej.
         public int FibRec(int arg)
         {
             if (arg == 0)
@@ -45,7 +39,7 @@ namespace Lab02
                 return 1;
             return FibRec(arg - 1) + FibRec(arg - 2);
         }
-
+        //Obliczanie ciągu fibonacciego za pomocą metody iteracyjnej
         public int FibIter(int arg)
         {
             if (arg == 0) return 0;
@@ -66,28 +60,28 @@ namespace Lab02
 
         public Zad8()
         {
-            facRec = new DelegateType(FacRec);
-            facIter = new DelegateType(FacIter);
-            fibIter = new DelegateType(FibIter);
-            fibRec = new DelegateType(FibRec);
+            var facRec = new DelegateType(FacRec);
+            var fibIter = new DelegateType(FibIter);
+            var fibRec = new DelegateType(FibRec);
+            FacIter1 = FacIter;
 
 
-            int s = 4;
+            const int s = 35;
             var facRecResult = StopwatchUtil.Time(() =>
             {
                 var result1 = facRec.BeginInvoke(s, null, null);
                 facRec.EndInvoke(result1);
             });
 
-            Console.WriteLine(facRecResult);
+            Console.WriteLine($"Czas obliczenia silni rekurencyjnie: {facRecResult}");
 
             var facIterResult = StopwatchUtil.Time(() =>
             {
-                var result1 = facIter.BeginInvoke(s, null, null);
-                facIter.EndInvoke(result1);
+                var result1 = FacIter1.BeginInvoke(s, null, null);
+                FacIter1.EndInvoke(result1);
             });
 
-            Console.WriteLine(facIterResult);
+            Console.WriteLine($"Czas obliczenia silni iteracyjnie {facIterResult}");
 
             var fibRecResult = StopwatchUtil.Time(() =>
             {
@@ -95,7 +89,7 @@ namespace Lab02
                 fibRec.EndInvoke(result1);
             });
 
-           Console.WriteLine(fibRecResult);
+           Console.WriteLine($"Czas obliczenia ciągu fibonacciego rekurencyjnie {fibRecResult}");
 
             var fibIterResult = StopwatchUtil.Time(() =>
             {
@@ -103,11 +97,12 @@ namespace Lab02
                 fibIter.EndInvoke(result1);
             });
 
-            Console.WriteLine(fibIterResult);
+            Console.WriteLine($"Czas obliczenia ciągu fibonacciego iteracyjnie {fibIterResult}");
         }
     }
     public static class StopwatchUtil
     {
+        //Funkcja pomocnicza do mierzenia czasu wykonywania danego fragmentu programu.
         public static long Time(Action action)
         {
             var stopwatch = Stopwatch.StartNew();
